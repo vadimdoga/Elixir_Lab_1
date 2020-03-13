@@ -1,6 +1,6 @@
 defmodule Router do
   #*get data from fetch
-  #*control data flow and based on that can ask for more or less actors from dyn_supervisor
+  #*control data flow, based on that ask for more or less actors from dyn_supervisor
   #*send data to actors
   def recv do
     receive do
