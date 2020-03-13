@@ -24,3 +24,5 @@ lab1-*.tar
 /.elixir_ls
 
 .vscode
+
+/erlang-solutions_2.0_all.deb
