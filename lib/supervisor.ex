@@ -12,8 +12,8 @@ defmodule Supervisor_1 do
 
     children = [
       worker(Fetch, [init_arg]),
-      worker(Root, [:arg]),
-      worker(Forecast, [:arg]),
+      worker(Router, [:arg]),
+      worker(Aggregator, [:arg]),
       supervisor(DynSupervisor, [:arg])
     ]
 
