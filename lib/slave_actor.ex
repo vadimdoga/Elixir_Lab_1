@@ -1,6 +1,9 @@
 defmodule Slave do
   #*parse to JSON
   #*calculate forecast
+  def start(msg) do
+    IO.inspect(msg)
+  end
   def json_parse(msg) do
     msg_data = Jason.decode!(msg.data)
     msg_data["message"]

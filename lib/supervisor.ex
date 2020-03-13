@@ -8,13 +8,24 @@ defmodule Supervisor_1 do
 
   @impl true
   def init(init_arg) do
-    import Supervisor.Spec
 
     children = [
-      worker(Fetch, [init_arg]),
-      worker(Router, [:arg]),
-      worker(Aggregator, [:arg]),
-      supervisor(DynSupervisor, [:arg])
+      %{
+        id: DynSupervisor,
+        start: {DynSupervisor, :start_link, [:ok]}
+      },
+      %{
+        id: Fetch,
+        start: {Fetch, :start_link, [init_arg]}
+      },
+      %{
+        id: Router,
+        start: {Router, :recv, [:ok]}
+      },
+      %{
+        id: Aggregator,
+        start: {Aggregator, :recv, [:ok]}
+      }
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

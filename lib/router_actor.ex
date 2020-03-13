@@ -10,7 +10,7 @@ defmodule Router do
   end
 
   def msg_operations(msg) do
-    IO.inspect(msg)
+    DynSupervisor.add_slave(msg)
     recv()
   end
 
