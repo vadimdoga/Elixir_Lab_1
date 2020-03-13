@@ -18,22 +18,8 @@ defmodule Fetch do
   end
 
   def msg_operations(msg) do
-    data = json_parse(msg)
-    cond do
-      data == :panic_msg -> recv()
-      true -> [{_id, root}] = :ets.lookup(:buckets_registry, "root_pid")
-      send(root, {:data, data})
-    end
-
-  end
-
-  def json_parse(msg) do
-    try do
-      msg_data = Jason.decode!(msg.data)
-      msg_data["message"]
-    rescue
-      Jason.DecodeError -> :panic_msg
-    end
+    [{_id, root}] = :ets.lookup(:buckets_registry, "root_pid")
+    send(root, {:data, msg})
   end
 
   def child_spec(opts) do
