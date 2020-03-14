@@ -8,7 +8,6 @@ defmodule Supervisor_1 do
 
   @impl true
   def init(init_arg) do
-
     children = [
       %{
         id: DynSupervisor,
@@ -20,7 +19,7 @@ defmodule Supervisor_1 do
       },
       %{
         id: Router,
-        start: {Router, :recv, [:ok]}
+        start: {Router, :recv, [[],[]]}
       },
       %{
         id: Aggregator,

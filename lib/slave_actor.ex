@@ -1,11 +1,12 @@
 defmodule Slave do
-  #*parse to JSON
-  #*calculate forecast
   def start(msg) do
     data = json_parse(msg)
     data = calc_mean(data)
-    frc = forecast(data)
-    IO.puts(frc)
+    _frc = forecast(data)
+    # IO.puts(frc)
+
+    {:ok, self()}
+    #todo send frc to aggregator
   end
 
   def json_parse(msg) do
