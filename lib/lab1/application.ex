@@ -6,9 +6,21 @@ defmodule Lab1.Application do
 
     children = [
       %{
-        id: Supervisor_1,
-        start: {Supervisor_1, :start_link, ["http://localhost:4000/iot"]}
+        id: DynSupervisor,
+        start: {DynSupervisor, :start_link, [:ok]}
       },
+      %{
+        id: Fetch,
+        start: {Fetch, :start_link, ["http://localhost:4000/iot"]}
+      },
+      %{
+        id: Router,
+        start: {Router, :recv, [[]]}
+      },
+      %{
+        id: Aggregator,
+        start: {Aggregator, :recv, [:ok]}
+      }
     ]
 
     opts = [strategy: :one_for_one, name: Lab1.Supervisor]

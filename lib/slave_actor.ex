@@ -1,17 +1,20 @@
 defmodule Slave do
-  def start(msg) do
+  def start_link(msg) do
     data = json_parse(msg)
     data = calc_mean(data)
     _frc = forecast(data)
     # IO.puts(frc)
-
     {:ok, self()}
     #todo send frc to aggregator
   end
 
   def json_parse(msg) do
-    msg_data = Jason.decode!(msg.data)
-    msg_data["message"]
+    try do
+      msg_data = Jason.decode!(msg.data)
+      msg_data["message"]
+    rescue
+      Jason.DecodeError -> DynSupervisor.rm_slave(self())
+    end
   end
 
   def calc_mean(data) do
@@ -74,8 +77,9 @@ defmodule Slave do
         -> "CLOUDY"
       data[:temperature_sensor] > 30 && data[:atmo_pressure_sensor] < 660 && data[:humidity_sensor] > 85
                                     && data[:wind_speed_sensor] > 45
-      -> "MONSOON"
-      true -> "JUST_A_NORMAL_DAY"
+        -> "MONSOON"
+      true
+        -> "JUST_A_NORMAL_DAY"
     end
   end
 

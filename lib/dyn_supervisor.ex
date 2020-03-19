@@ -7,23 +7,26 @@ defmodule DynSupervisor do
 
   @impl true
   def init(_init_arg) do
-    DynamicSupervisor.init(max_children: 5, strategy: :one_for_one)
+    DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def add_slave(msg) do
+  def add_slave(mdl_name, mdl_fnc, mdl_arg) do
+    name =
+      ?a..?z
+      |> Enum.take_random(6)
+      |> List.to_string()
     child_spec = %{
-      id: Slave,
-      start: {Slave, :start, [msg]}
+      id: name,
+      start: {mdl_name, mdl_fnc, mdl_arg}
     }
-    {:ok, pid} = DynamicSupervisor.start_child(__MODULE__, child_spec)
-    {:ok, pid}
+    DynamicSupervisor.start_child(__MODULE__, child_spec)
   end
 
   def rm_slave(pid) do
-    pid = DynamicSupervisor.terminate_child(__MODULE__, pid)
+    DynamicSupervisor.terminate_child(__MODULE__, pid)
   end
 
   def count_children do
-    DynamicSupervisor.which_children(__MODULE__)
+    DynamicSupervisor.count_children(__MODULE__)
   end
 end
