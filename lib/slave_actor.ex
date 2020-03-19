@@ -1,5 +1,5 @@
 defmodule Slave do
-  use GenServer
+  use GenServer, restart: :transient
   require Logger
   @registry :workers_registry
 

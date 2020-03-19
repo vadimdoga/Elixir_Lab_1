@@ -5,8 +5,14 @@ defmodule Lab1.Application do
 
   def start(_type, _args) do
     children = [
-      {Registry, [keys: :unique, name: @registry]},
-      {DynSupervisor, []},
+      {
+        Registry,
+        [keys: :unique, name: @registry]
+      },
+      {
+        DynSupervisor,
+        []
+      },
       %{
         id: Fetch,
         start: {Fetch, :start_link, ["http://localhost:4000/iot"]}
