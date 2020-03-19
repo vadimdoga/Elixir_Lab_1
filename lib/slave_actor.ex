@@ -8,10 +8,6 @@ defmodule Slave do
     GenServer.start_link(__MODULE__, list, name: via_tuple(name))
   end
 
-  def stop(name), do: GenServer.stop(via_tuple(name))
-
-  def crash(name), do: GenServer.cast(via_tuple(name), :raise)
-
   #Callbacks
   def init(list) do
     name = List.first(list)
@@ -24,18 +20,6 @@ defmodule Slave do
     IO.puts(frc)
 
     {:ok, name}
-  end
-
-  def handle_cast(:work, name) do
-    Logger.info("hola")
-    {:noreply, name}
-  end
-
-  def handle_cast(:raise, name),
-    do: raise RuntimeError, message: "Error, Server #{name} has crashed"
-
-  def terminate(reason, name) do
-    Logger.info("Exiting worker: #{name} with reason: #{inspect reason}")
   end
 
   ## Private
