@@ -1,14 +1,12 @@
 defmodule Lab1.Application do
-
   use Application
 
-  def start(_type, _args) do
+  @registry :workers_registry
 
+  def start(_type, _args) do
     children = [
-      %{
-        id: DynSupervisor,
-        start: {DynSupervisor, :start_link, [:ok]}
-      },
+      {Registry, [keys: :unique, name: @registry]},
+      {DynSupervisor, []},
       %{
         id: Fetch,
         start: {Fetch, :start_link, ["http://localhost:4000/iot"]}
@@ -23,7 +21,8 @@ defmodule Lab1.Application do
       }
     ]
 
-    opts = [strategy: :one_for_one, name: Lab1.Supervisor]
+    opts = [strategy: :one_for_one, name: __MODULE__]
+    # Registry.start_link(keys: :unique, name: SlaveReg)
     Supervisor.start_link(children, opts)
   end
 end

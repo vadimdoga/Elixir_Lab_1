@@ -1,23 +1,54 @@
 defmodule Slave do
-  def start_link(msg) do
+  use GenServer
+  require Logger
+  @registry :workers_registry
+
+  def start_link(name, msg) do
+    list = [] ++ name ++ msg
+    GenServer.start_link(__MODULE__, list, name: via_tuple(name))
+  end
+
+  def stop(name), do: GenServer.stop(via_tuple(name))
+
+  def crash(name), do: GenServer.cast(via_tuple(name), :raise)
+
+  #Callbacks
+  def init(list) do
+    name = List.first(list)
+    msg = List.last(list)
+    Logger.info("Starting #{inspect(name)}")
+
     data = json_parse(msg)
     data = calc_mean(data)
-    _frc = forecast(data)
-    # IO.puts(frc)
-    {:ok, self()}
-    #todo send frc to aggregator
+    frc = forecast(data)
+    IO.puts(frc)
+
+    {:ok, name}
   end
 
-  def json_parse(msg) do
-    try do
-      msg_data = Jason.decode!(msg.data)
-      msg_data["message"]
-    rescue
-      Jason.DecodeError -> DynSupervisor.rm_slave(self())
-    end
+  def handle_cast(:work, name) do
+    Logger.info("hola")
+    {:noreply, name}
   end
 
-  def calc_mean(data) do
+  def handle_cast(:raise, name),
+    do: raise RuntimeError, message: "Error, Server #{name} has crashed"
+
+  def terminate(reason, name) do
+    Logger.info("Exiting worker: #{name} with reason: #{inspect reason}")
+  end
+
+  ## Private
+  defp via_tuple(name) do
+    {:via, Registry, {@registry, name}}
+  end
+
+  defp json_parse(msg) do
+    msg_data = Jason.decode!(msg.data)
+    msg_data["message"]
+  end
+
+  defp calc_mean(data) do
     atmo_pressure_sensor_1 = data["atmo_pressure_sensor_1"]
     atmo_pressure_sensor_2 = data["atmo_pressure_sensor_2"]
     atmo_pressure_sensor = mean(atmo_pressure_sensor_1, atmo_pressure_sensor_2)
@@ -45,7 +76,7 @@ defmodule Slave do
     map
   end
 
-  def forecast(data) do
+  defp forecast(data) do
     cond do
       data[:temperature_sensor] < -2 && data[:light_sensor] < 128 && data[:atmo_pressure_sensor] < 720
         -> "SNOW"
@@ -83,17 +114,9 @@ defmodule Slave do
     end
   end
 
-  def mean(a, b) do
+  defp mean(a, b) do
     a + b / 2
   end
 
-  def child_spec(opts) do
-    %{
-      id: __MODULE__,
-      start: {__MODULE__, :start_link, [opts]},
-      type: :worker,
-      restart: :permanent,
-    }
-  end
 end
 

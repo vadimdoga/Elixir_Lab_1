@@ -1,7 +1,4 @@
 defmodule Router do
-  #//get data from fetch
-  #*control data flow, based on that ask for more or less actors from dyn_supervisor
-  #//send data to actors
   def recv(list_msg) do
     receive do
       {:data, msg} -> msg_operations(msg, list_msg)
@@ -10,11 +7,20 @@ defmodule Router do
   end
 
   def msg_operations(msg, list_msg) do
+
+    name =
+      ?a..?z
+      |> Enum.take_random(6)
+      |> List.to_string()
+
+    pid = DynSupervisor.add_slave(name, msg)
+    IO.inspect(pid)
+    IO.inspect(DynSupervisor.count_children())
+
     # list_msg = list_msg++[msg]
     # list_msg_size = Enum.count(list_msg)
-    pid = DynSupervisor.add_slave(Slave, :start_link, [msg])
+    # pid = DynSupervisor.add_slave(Slave, :start_link, [msg])
 
-    IO.inspect(pid)
 
     # IO.inspect(DynSupervisor.count_children())
 
@@ -36,4 +42,6 @@ defmodule Router do
       restart: :permanent,
     }
   end
+
+
 end
