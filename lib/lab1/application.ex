@@ -19,11 +19,11 @@ defmodule Lab1.Application do
       },
       %{
         id: Router,
-        start: {Router, :recv, [[]]}
+        start: {Router, :start_link, []}
       },
       %{
         id: Aggregator,
-        start: {Aggregator, :recv, [:ok]}
+        start: {Aggregator, :start_link, []}
       }
     ]
 

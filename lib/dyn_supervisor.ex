@@ -7,13 +7,13 @@ defmodule DynSupervisor do
 
   @impl true
   def init(_init_arg) do
-    DynamicSupervisor.init(strategy: :one_for_one, max_children: 20)
+    DynamicSupervisor.init(strategy: :one_for_one, max_children: 25)
   end
 
-  def add_slave(child_name, msg) do
+  def add_slave(child_name, msg, aggregator_pid) do
     child_spec = %{
       id: Slave,
-      start: {Slave, :start_link, [[child_name],[msg]]},
+      start: {Slave, :start_link, [[child_name],[aggregator_pid],[msg]]},
       restart: :temporary
     }
     DynamicSupervisor.start_child(__MODULE__, child_spec)

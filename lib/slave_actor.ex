@@ -3,22 +3,25 @@ defmodule Slave do
   require Logger
   @registry :workers_registry
 
-  def start_link(name, msg) do
-    list = [] ++ name ++ msg
+  def start_link(name, aggregator_pid, msg) do
+    list = [] ++ name ++ aggregator_pid ++ msg
     GenServer.start_link(__MODULE__, list, name: via_tuple(name))
   end
 
   #Callbacks
   def init(list) do
     name = List.first(list)
+    aggregator_pid = Enum.at(list, 1)
+
     msg = List.last(list)
-    Logger.info("Starting #{inspect(name)}")
+    # Logger.info("Starting #{inspect(name)}")
 
     data = json_parse(msg)
     data = calc_mean(data)
     frc = forecast(data)
-    IO.puts(frc)
-
+    list_weather = []
+    list_weather = list_weather ++ [frc] ++ [data]
+    send(aggregator_pid, {:frc, list_weather})
     {:ok, name}
   end
 

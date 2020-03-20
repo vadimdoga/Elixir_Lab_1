@@ -2,7 +2,7 @@ defmodule Fetch do
   def start_link(url) do
     {:ok, _pid} = EventsourceEx.new(url, stream_to: self())
     #spawn router pid a single time and insert into kind of global state
-    router_pid = spawn_link(Router, :recv, [[]])
+    router_pid = spawn_link(Router, :start_link, [])
     :ets.new(:buckets_registry, [:named_table])
     :ets.insert(:buckets_registry, {"router_pid", router_pid})
     recv()
