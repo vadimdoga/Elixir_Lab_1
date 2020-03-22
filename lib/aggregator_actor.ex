@@ -1,18 +1,22 @@
 defmodule Aggregator do
+  use GenServer
+
   def start_link do
-    recv()
+    GenServer.start_link(__MODULE__, :ok, [])
   end
-  def recv do
-    receive do
-      {:frc, msg} -> msg_operations(msg)
-      _ -> IO.puts("No match!")
-    end
+
+  @impl true
+  def init(init_arg) do
+    {:ok, init_arg}
   end
-  def msg_operations(msg) do
-    # IO.inspect(msg)
-    # Process.sleep(5000)
-    recv()
+
+  @impl true
+  def handle_cast({:aggregator, _list}, state) do
+    # IO.inspect(list)
+
+    {:noreply, state}
   end
+
 end
 
 

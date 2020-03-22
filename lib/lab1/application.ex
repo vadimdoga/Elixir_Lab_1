@@ -24,6 +24,10 @@ defmodule Lab1.Application do
       %{
         id: Aggregator,
         start: {Aggregator, :start_link, []}
+      },
+      %{
+        id: Flow,
+        start: {Flow, :start_link, []}
       }
     ]
 

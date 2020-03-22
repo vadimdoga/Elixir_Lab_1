@@ -13,8 +13,8 @@ defmodule Slave do
     frc = forecast(data)
     list_weather = []
     list_weather = list_weather ++ [frc] ++ [data]
-    [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry1, "aggregator_pid")
-    send(aggregator_pid, {:frc, list_weather})
+    [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
+    GenServer.cast(aggregator_pid, {:aggregator, list_weather})
 
     {:ok, self()}
   end
@@ -26,8 +26,8 @@ defmodule Slave do
       frc = forecast(data)
       list_weather = []
       list_weather = list_weather ++ [frc] ++ [data]
-      [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry1, "aggregator_pid")
-      send(aggregator_pid, {:frc, list_weather})
+      [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
+      GenServer.cast(aggregator_pid, {:aggregator, list_weather})
     rescue
       _ -> :ok
     end
