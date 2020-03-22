@@ -11,9 +11,11 @@ defmodule Aggregator do
   end
 
   @impl true
-  def handle_cast({:aggregator, _list}, state) do
-    # IO.inspect(list)
-
+  def handle_cast({:aggregator, flow_aggr_pid}, state) do
+    frc = GenServer.call(flow_aggr_pid, :top_frc)
+    if frc != nil do
+      IO.inspect(frc)
+    end
     {:noreply, state}
   end
 

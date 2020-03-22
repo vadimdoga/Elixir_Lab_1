@@ -11,11 +11,13 @@ defmodule Fetch do
     {:ok, router_pid} = GenServer.start_link(Router, [])
     {:ok, flow_pid} = GenServer.start_link(Flow, [])
     {:ok, aggregator_pid} = GenServer.start_link(Aggregator, [])
+    {:ok, flow_aggr_pid} = GenServer.start_link(FlowAggr, [])
 
     :ets.new(:buckets_registry, [:named_table])
     :ets.insert(:buckets_registry, {"router_pid", router_pid})
     :ets.insert(:buckets_registry, {"flow_pid", flow_pid})
     :ets.insert(:buckets_registry, {"aggregator_pid", aggregator_pid})
+    :ets.insert(:buckets_registry, {"flow_aggr_pid", flow_aggr_pid})
 
     recv()
   end

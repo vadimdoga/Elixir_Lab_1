@@ -20,9 +20,8 @@ defmodule Router do
     list_pid = state[:list_pid]
     counter = state[:counter]
     list_msg = list_msg ++ [msg]
-    workers_nr = GenServer.call(flow_pid, :workers_nr)
 
-    IO.inspect(DynSupervisor.count_children())
+    workers_nr = GenServer.call(flow_pid, :workers_nr)
 
     list_pid = if workers_nr < DynSupervisor.count_children()[:workers] do
       rm_slave(list_pid)

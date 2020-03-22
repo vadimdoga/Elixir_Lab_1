@@ -28,6 +28,10 @@ defmodule Lab1.Application do
       %{
         id: Flow,
         start: {Flow, :start_link, []}
+      },
+      %{
+        id: FlowAggr,
+        start: {FlowAggr, :start_link, []}
       }
     ]
 

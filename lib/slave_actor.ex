@@ -14,7 +14,10 @@ defmodule Slave do
     list_weather = []
     list_weather = list_weather ++ [frc] ++ [data]
     [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
-    GenServer.cast(aggregator_pid, {:aggregator, list_weather})
+    [{_id, flow_aggr_pid}] = :ets.lookup(:buckets_registry, "flow_aggr_pid")
+
+    GenServer.cast(flow_aggr_pid, {:flow_aggr, list_weather})
+    GenServer.cast(aggregator_pid, {:aggregator, flow_aggr_pid})
 
     {:ok, self()}
   end
@@ -27,7 +30,10 @@ defmodule Slave do
       list_weather = []
       list_weather = list_weather ++ [frc] ++ [data]
       [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
-      GenServer.cast(aggregator_pid, {:aggregator, list_weather})
+      [{_id, flow_aggr_pid}] = :ets.lookup(:buckets_registry, "flow_aggre_pid")
+
+      GenServer.cast(flow_aggr_pid, {:flow_aggr, list_weather})
+      GenServer.cast(aggregator_pid, {:aggregator, flow_aggr_pid})
     rescue
       _ -> :ok
     end

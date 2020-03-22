@@ -56,6 +56,7 @@ defmodule Flow do
       msg_counter > 430 && msg_counter < 470 -> 13
       msg_counter > 470 && msg_counter < 510 -> 14
       msg_counter > 510 -> 20
+      true -> 10
     end
   end
 
