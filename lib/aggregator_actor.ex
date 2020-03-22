@@ -9,8 +9,8 @@ defmodule Aggregator do
     end
   end
   def msg_operations(msg) do
-    IO.inspect(msg)
-    Process.sleep(5000)
+    # IO.inspect(msg)
+    # Process.sleep(5000)
     recv()
   end
 end

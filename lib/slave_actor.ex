@@ -1,28 +1,38 @@
 defmodule Slave do
-  use GenServer, restart: :transient
-  require Logger
+  use GenServer
   @registry :workers_registry
 
-  def start_link(name, aggregator_pid, msg) do
-    list = [] ++ name ++ aggregator_pid ++ msg
-    GenServer.start_link(__MODULE__, list, name: via_tuple(name))
+  def start_link(name, msg) do
+    GenServer.start_link(__MODULE__, msg, name: via_tuple(name))
   end
 
   #Callbacks
-  def init(list) do
-    name = List.first(list)
-    aggregator_pid = Enum.at(list, 1)
-
-    msg = List.last(list)
-    # Logger.info("Starting #{inspect(name)}")
-
+  def init(msg) do
     data = json_parse(msg)
     data = calc_mean(data)
     frc = forecast(data)
     list_weather = []
     list_weather = list_weather ++ [frc] ++ [data]
+    [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry1, "aggregator_pid")
     send(aggregator_pid, {:frc, list_weather})
-    {:ok, name}
+
+    {:ok, self()}
+  end
+
+  def handle_cast({:rtl, msg}, state) do
+    try do
+      data = json_parse(msg)
+      data = calc_mean(data)
+      frc = forecast(data)
+      list_weather = []
+      list_weather = list_weather ++ [frc] ++ [data]
+      [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry1, "aggregator_pid")
+      send(aggregator_pid, {:frc, list_weather})
+    rescue
+      _ -> :ok
+    end
+
+    {:noreply, state}
   end
 
   ## Private
