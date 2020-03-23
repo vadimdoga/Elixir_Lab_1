@@ -26,8 +26,8 @@ defmodule Lab1.Application do
         start: {Aggregator, :start_link, []}
       },
       %{
-        id: Flow,
-        start: {Flow, :start_link, []}
+        id: FlowRouter,
+        start: {FlowRouter, :start_link, []}
       },
       %{
         id: FlowAggr,
@@ -36,7 +36,6 @@ defmodule Lab1.Application do
     ]
 
     opts = [strategy: :one_for_one, name: __MODULE__]
-    # Registry.start_link(keys: :unique, name: SlaveReg)
     Supervisor.start_link(children, opts)
   end
 end

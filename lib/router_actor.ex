@@ -40,31 +40,29 @@ defmodule Router do
     {:noreply, state}
   end
 
-  def add_slave(list_msg, list_pid) do
+  #Private
+  defp add_slave(list_msg, list_pid) do
     #generate a random name
     name = generate_name()
     msg = List.last(list_msg)
-    # IO.inspect(msg)
+
     {state, pid} = DynSupervisor.add_slave(name, msg)
-    # IO.inspect(pid)
     list_pid_new = [pid | list_pid]
     list_msg = List.delete_at(list_msg, -1)
-    {list_pid, list_msg} = if state == :error do
+    if state == :error do
       {list_pid, list_msg}
     else
       {list_pid_new, list_msg}
     end
-    {list_pid, list_msg}
   end
 
-  def rm_slave(list_pid) do
+  defp rm_slave(list_pid) do
     pid = List.last(list_pid)
     DynSupervisor.rm_slave(pid)
-    list_pid = List.delete_at(list_pid, -1)
-    list_pid
+    List.delete_at(list_pid, -1)
   end
 
-  def reutilise_slave(list_pid, list_msg, counter) do
+  defp reutilise_slave(list_pid, list_msg, counter) do
     list_pid_size = Enum.count(list_pid)
 
     counter = if counter > list_pid_size do

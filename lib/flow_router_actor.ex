@@ -1,4 +1,4 @@
-defmodule Flow do
+defmodule FlowRouter do
   use GenServer
 
   def start_link() do
@@ -13,6 +13,7 @@ defmodule Flow do
     {:ok, state}
   end
 
+  #asyncronous function for performing task during timer
   @impl true
   def handle_cast(:to_flow, state) do
     start_time = state[:start_time]
@@ -33,13 +34,15 @@ defmodule Flow do
     end
   end
 
+  #function that return to router nr of workers
   @impl true
   def handle_call(:workers_nr, _from, state) do
 
     {:reply, get_workers(state[:current_flow]), state}
   end
 
-  def get_workers(msg_counter) do
+  #based on nr of msg per second say how much actors to use
+  defp get_workers(msg_counter) do
     cond do
       msg_counter < 10 -> 1
       msg_counter > 10 && msg_counter < 30 -> 2

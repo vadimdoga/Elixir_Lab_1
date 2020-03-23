@@ -12,11 +12,24 @@ defmodule Aggregator do
 
   @impl true
   def handle_cast({:aggregator, flow_aggr_pid}, state) do
-    frc = GenServer.call(flow_aggr_pid, :top_frc)
+    #call flow_aggr_actor for frc and metrics
+    {frc_metrics, frc} = GenServer.call(flow_aggr_pid, :top_frc)
     if frc != nil do
-      IO.inspect(frc)
+      print_frc(frc, frc_metrics)
     end
     {:noreply, state}
+  end
+  #pretty printing
+  defp print_frc(frc, frc_metrics) do
+    IO.puts("|.......................................|")
+    IO.puts("             FORECAST DATA:")
+    IO.puts("----------------------------------------")
+    IO.inspect(frc, label: "Forecast")
+    IO.puts("----------------------------------------")
+    IO.puts("              Metrics:")
+    Enum.map(frc_metrics, fn {k,v} ->
+      IO.inspect(v, label: k)
+    end)
   end
 
 end

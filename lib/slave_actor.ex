@@ -8,32 +8,13 @@ defmodule Slave do
 
   #Callbacks
   def init(msg) do
-    data = json_parse(msg)
-    data = calc_mean(data)
-    frc = forecast(data)
-    list_weather = []
-    list_weather = list_weather ++ [frc] ++ [data]
-    [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
-    [{_id, flow_aggr_pid}] = :ets.lookup(:buckets_registry, "flow_aggr_pid")
-
-    GenServer.cast(flow_aggr_pid, {:flow_aggr, list_weather})
-    GenServer.cast(aggregator_pid, {:aggregator, flow_aggr_pid})
-
+    perform_calc(msg)
     {:ok, self()}
   end
 
   def handle_cast({:rtl, msg}, state) do
     try do
-      data = json_parse(msg)
-      data = calc_mean(data)
-      frc = forecast(data)
-      list_weather = []
-      list_weather = list_weather ++ [frc] ++ [data]
-      [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
-      [{_id, flow_aggr_pid}] = :ets.lookup(:buckets_registry, "flow_aggre_pid")
-
-      GenServer.cast(flow_aggr_pid, {:flow_aggr, list_weather})
-      GenServer.cast(aggregator_pid, {:aggregator, flow_aggr_pid})
+      perform_calc(msg)
     rescue
       _ -> :ok
     end
@@ -42,6 +23,17 @@ defmodule Slave do
   end
 
   ## Private
+  defp perform_calc(msg) do
+    data = json_parse(msg)
+    data = calc_mean(data)
+    frc = forecast(data)
+    [{_id, aggregator_pid}] = :ets.lookup(:buckets_registry, "aggregator_pid")
+    [{_id, flow_aggr_pid}] = :ets.lookup(:buckets_registry, "flow_aggr_pid")
+
+    GenServer.cast(flow_aggr_pid, {:flow_aggr, [frc, data]})
+    GenServer.cast(aggregator_pid, {:aggregator, flow_aggr_pid})
+  end
+
   defp via_tuple(name) do
     {:via, Registry, {@registry, name}}
   end
