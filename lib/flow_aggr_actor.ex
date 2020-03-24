@@ -17,9 +17,8 @@ defmodule FlowAggr do
   #asyncronous function for performing task during timer
   @impl true
   def handle_cast({:flow_aggr, list_weather}, state) do
-    timer = System.argv()
-    timer = List.first(timer)
-    timer = String.to_integer(timer)
+    rate = System.get_env("RATE")
+    rate = String.to_integer(rate)
 
     frc = List.first(list_weather)
     start_time = state[:start_time]
@@ -31,7 +30,7 @@ defmodule FlowAggr do
     time = Time.utc_now()
     diff_time = Time.diff(time, start_time, :millisecond)
 
-    if diff_time < timer do
+    if diff_time < rate do
       state = %{:start_time => start_time, :frc_list => frc_list, :full_list => full_list}
       {:noreply, state}
     else
