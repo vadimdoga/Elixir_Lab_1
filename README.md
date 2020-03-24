@@ -15,7 +15,7 @@ The basic requirements are:
 ```
 
 ## Pretty Printing
-
+![pretty](https://user-images.githubusercontent.com/43139007/77406068-bff4eb80-6dbc-11ea-929a-7d410cf94316.png)
 ## Start the project
 ```
 docker pull alexburlacu/rtp-server
